@@ -1,0 +1,63 @@
+server:
+  port: 8082
+  servlet:
+    context-path: /api
+
+spring:
+  datasource:
+    druid:
+      stat-view-servlet:
+        enabled: true
+        loginUsername: admin
+        loginPassword: 123456
+    dynamic:
+      druid: #以下是支持的全局默认值
+        initial-size: 5
+        max-active: 8
+        min-idle: 3
+        # 配置获取连接等待超时的时间 单位毫秒
+        max-wait: 60000
+        # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+        time-between-eviction-runs-millis: 60000
+        # 配置一个连接在池中最小生存的时间，单位是毫秒
+        min-evictable-idle-time-millis: 300000
+        validation-query: select
+        test-while-idle: true
+        test-on-borrow: false
+        test-on-return: false
+        # 打开PSCache，并且指定每个连接上PSCache的大小
+        pool-prepared-statements: true
+        #      配置监控统计拦截器 日志配置  防火墙
+        #      stat监控数据库性能
+        #      wall  用于防火墙
+        #      日志 slf4j logback
+        #      log4j
+        #      log4j2
+        # 配置多个英文逗号分隔
+        filters: stat,wall,slf4j
+        max-pool-prepared-statement-per-connection-size: 20
+        # 合并多个DruidDataSource的监控数据
+        use-global-data-source-stat: true
+      datasource:
+        master:
+          username: root
+          password: root
+          url: jdbc:mysql://121.196.151.249:3313/test?serverTimezone=Asia/Shanghai&useUnicode=true&charsetEncoding=utf8
+        slave:
+          username: root
+          password: root
+          url: jdbc:mysql://121.196.151.249:3314/test?serverTimezone=Asia/Shanghai&useUnicode=true&charsetEncoding=utf8
+
+
+mybatis-plus:
+  # 默认是 classpath*:mapper/**/*.xml
+  mapper-locations: classpath:mappers/**/*.xml
+  global-config:
+    db-config:
+      logic-delete-field: isDelete
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      # 默认全部id生成策略
+      id-type: auto
+  configuration:
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl

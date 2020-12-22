@@ -1,0 +1,56 @@
+version: "3"
+
+services:
+  mysql-master:
+    image: mysql:5.7.32
+    restart: always
+    hostname: mysql-master
+    container_name: mysql_master
+    ports:
+      - 3316:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      TZ: Asia/Shanghai
+    volumes:
+      - ./master/mysql/data:/var/lib/mysql
+      - ./master/mysql/logs:/var/log/mysql
+    command:
+      --server_id=100
+      --log-bin=mysql-master-bin
+      --sync_binlog=1
+      # 忽略不同步的数据库
+      --binlog-ignore-db=mysql
+      --binlog_format=mixed
+      --expire_logs_days=7
+      #
+      --default-authentication-plugin=mysql_native_password
+      # 默认的编码集
+      --character-set-server=utf8mb4
+      # 默认的排序方式
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+      --lower_case_table_names=1
+    links:
+      - mysql-slave
+
+  mysql-slave:
+    image: mysql:5.7.32
+    restart: always
+    hostname: mysql-slave
+    container_name: mysql-slave
+    ports:
+      - 3317:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      TZ: Asia/Shanghai
+    volumes:
+      - ./slave/mysql/data:/var/lib/mysql
+      - ./slave/mysql/logs:/var/log/mysql
+    command:
+      --server_id=200
+      --read_only=1
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+      --lower_case_table_names=1
